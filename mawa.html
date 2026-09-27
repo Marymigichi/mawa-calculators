@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mawa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --body-plastic: #dcdad2;
+    --body-plastic-dark: #c7c4b9;
+    --screen-bg: #c3ceb9;
+    --screen-digit: #2c3a2e;
+    --key-num: #f6f5f0;
+    --key-num-text: #2a2a28;
+    --key-fn: #b9c4c9;
+    --key-fn-text: #23302f;
+    --key-op: #3c3c3e;
+    --key-op-text: #f2f0ea;
+    --key-eq: #d9711f;
+    --key-eq-text: #fff8ef;
+    --shadow: rgba(0,0,0,0.25);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-bg: #0e0e10;
+    }
+  }
+  :root { --page-bg: #e5e2d8; }
+  :root[data-theme="dark"] { --page-bg: #0e0e10; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--page-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', system-ui, sans-serif;
+    padding: 24px 16px;
+  }
+  .shell {
+    width: 100%;
+    max-width: 320px;
+    background: linear-gradient(180deg, var(--body-plastic), var(--body-plastic-dark));
+    border-radius: 14px;
+    padding: 16px 14px 20px;
+    box-shadow: 0 24px 50px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2px 4px 10px;
+  }
+  .logo {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 800;
+    font-style: italic;
+    font-size: 22px;
+    color: #24314e;
+    letter-spacing: -0.02em;
+  }
+  .model {
+    font-size: 10px;
+    color: #6b6a63;
+    text-align: right;
+    line-height: 1.4;
+    padding-top: 4px;
+  }
+  .solar {
+    height: 14px;
+    margin: 0 4px 10px;
+    border-radius: 3px;
+    background: repeating-linear-gradient(100deg, #26262c, #26262c 6px, #3a3a42 6px, #3a3a42 12px);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .screen {
+    background: var(--screen-bg);
+    border-radius: 6px;
+    padding: 14px 12px 10px;
+    margin: 0 2px 14px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.25);
+    text-align: right;
+    min-height: 78px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+    overflow: hidden;
+  }
+  .prev {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--screen-digit);
+    opacity: 0.65;
+    white-space: nowrap;
+    overflow-x: auto;
+    min-height: 16px;
+  }
+  .current {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(26px, 8vw, 34px);
+    color: var(--screen-digit);
+    white-space: nowrap;
+    overflow-x: auto;
+    line-height: 1.1;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  button {
+    border: none;
+    border-radius: 8px;
+    height: 50px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--key-num);
+    color: var(--key-num-text);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.5);
+    transition: transform 0.05s ease, box-shadow 0.05s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  button:focus-visible { outline: 2px solid #24314e; outline-offset: 2px; }
+  .fn { background: var(--key-fn); color: var(--key-fn-text); font-size: 14px; }
+  .op { background: var(--key-op); color: var(--key-op-text); font-size: 19px; }
+  .eq { background: var(--key-eq); color: var(--key-eq-text); }
+  .zero { grid-column: span 2; }
+  @media (prefers-reduced-motion: reduce) {
+    button { transition: none; }
+    button:active { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top-row">
+      <div class="logo">mawa</div>
+      <div class="model">MW-12<br>S-V.P.A.M.</div>
+    </div>
+    <div class="solar" aria-hidden="true"></div>
+    <div class="screen">
+      <div class="prev" id="prev">&nbsp;</div>
+      <div class="current" id="current">0</div>
+    </div>
+    <div class="grid">
+      <button class="fn" data-action="clear">AC</button>
+      <button class="fn" data-action="sign">+/-</button>
+      <button class="fn" data-action="percent">%</button>
+      <button class="op" data-op="÷">÷</button>
+
+      <button data-num="7">7</button>
+      <button data-num="8">8</button>
+      <button data-num="9">9</button>
+      <button class="op" data-op="×">×</button>
+
+      <button data-num="4">4</button>
+      <button data-num="5">5</button>
+      <button data-num="6">6</button>
+      <button class="op" data-op="−">−</button>
+
+      <button data-num="1">1</button>
+      <button data-num="2">2</button>
+      <button data-num="3">3</button>
+      <button class="op" data-op="+">+</button>
+
+      <button class="zero" data-num="0">0</button>
+      <button data-action="decimal">.</button>
+      <button class="eq" data-action="equals">=</button>
+    </div>
+  </div>
+
+<script>
+(function () {
+  const prevEl = document.getElementById('prev');
+  const curEl = document.getElementById('current');
+  let current = '0', previous = null, operator = null, overwrite = true;
+  const MAX_LEN = 12;
+
+  function fmt(s) {
+    if (s === 'Error') return s;
+    const neg = s.startsWith('-');
+    let body = neg ? s.slice(1) : s;
+    let [int, dec] = body.split('.');
+    int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (neg ? '-' : '') + int + (dec !== undefined ? '.' + dec : '');
+  }
+
+  function render() {
+    curEl.textContent = fmt(current);
+    prevEl.textContent = (operator && previous !== null) ? fmt(previous) + ' ' + operator : '\u00A0';
+  }
+
+  function inputNum(d) {
+    if (current === 'Error') { current = '0'; overwrite = true; }
+    if (overwrite) { current = d; overwrite = false; }
+    else {
+      if (current.replace(/[-.]/g, '').length >= MAX_LEN) return;
+      current = current === '0' ? d : current + d;
+    }
+  }
+  function inputDecimal() {
+    if (current === 'Error') { current = '0'; overwrite = false; }
+    if (overwrite) { current = '0.'; overwrite = false; return; }
+    if (!current.includes('.')) current += '.';
+  }
+  function toggleSign() {
+    if (current === 'Error' || current === '0') return;
+    current = current.startsWith('-') ? current.slice(1) : '-' + current;
+  }
+  function percent() {
+    if (current === 'Error') return;
+    current = String(parseFloat(current) / 100);
+  }
+  function clearAll() { current = '0'; previous = null; operator = null; overwrite = true; }
+  function compute(a, b, op) {
+    a = parseFloat(a); b = parseFloat(b);
+    switch (op) {
+      case '+': return a + b;
+      case '−': return a - b;
+      case '×': return a * b;
+      case '÷': return b === 0 ? NaN : a / b;
+      default: return b;
+    }
+  }
+  function trimResult(n) {
+    if (Number.isInteger(n)) return String(n);
+    let s = n.toPrecision(10);
+    if (s.includes('.')) s = s.replace(/0+$/, '').replace(/\.$/, '');
+    if (s.includes('e')) s = String(n);
+    return s;
+  }
+  function setOperator(op) {
+    if (current === 'Error') return;
+    if (operator && !overwrite) {
+      const r = compute(previous, current, operator);
+      if (!isFinite(r)) { current = 'Error'; previous = null; operator = null; overwrite = true; render(); return; }
+      previous = trimResult(r); current = previous;
+    } else { previous = current; }
+    operator = op; overwrite = true;
+  }
+  function equals() {
+    if (operator === null || current === 'Error') return;
+    const r = compute(previous, current, operator);
+    current = isFinite(r) ? trimResult(r) : 'Error';
+    previous = null; operator = null; overwrite = true;
+  }
+  function backspace() {
+    if (current === 'Error' || overwrite) { current = '0'; overwrite = true; return; }
+    current = current.length > 1 ? current.slice(0, -1) : '0';
+    if (current === '-') current = '0';
+  }
+
+  document.querySelector('.grid').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    if (btn.dataset.num !== undefined) inputNum(btn.dataset.num);
+    else if (btn.dataset.op) setOperator(btn.dataset.op);
+    else if (btn.dataset.action === 'decimal') inputDecimal();
+    else if (btn.dataset.action === 'sign') toggleSign();
+    else if (btn.dataset.action === 'percent') percent();
+    else if (btn.dataset.action === 'clear') clearAll();
+    else if (btn.dataset.action === 'equals') equals();
+    render();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9') inputNum(e.key);
+    else if (e.key === '.') inputDecimal();
+    else if (e.key === '+') setOperator('+');
+    else if (e.key === '-') setOperator('−');
+    else if (e.key === '*') setOperator('×');
+    else if (e.key === '/') { e.preventDefault(); setOperator('÷'); }
+    else if (e.key === 'Enter' || e.key === '=') equals();
+    else if (e.key === 'Backspace') backspace();
+    else if (e.key === 'Escape') clearAll();
+    else if (e.key === '%') percent();
+    else return;
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
